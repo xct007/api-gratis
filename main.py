@@ -11,7 +11,53 @@ from starlette.requests import Request
 
 from routers import api, socket
 
-app = FastAPI()
+description = """
+### API Gratis
+This is a free API for testing purposes. It is a RESTful API built on FastAPI and Python.
+
+### Notes
+Will be adding more endpoints soon. If you have any suggestions, please let us know.
+
+### Support
+If you like this API, please consider supporting us on [Patreon](https://www.patreon.com/apigratis).
+
+### Credits
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [Python](https://www.python.org/)
+- [Uvicorn](https://www.uvicorn.org/)
+- [Starlette](https://www.starlette.io/)
+- [GitHub](https://github.com/xct007/apigratis)
+
+### License
+MIT License
+
+### Disclaimer
+No guarantee of availability or performance is provided. Use at your own risk.
+"""
+
+app = FastAPI(
+    title="API",
+    description=description,
+    version="0.1.0",
+    contact={
+        "name": "ITSROSE APIs",
+        "url": "https://devitsrose.com",
+        "email": "rose@devitsrose.com"
+    },
+    license_info={
+        "name": "MIT License",
+        "url": "https://opensource.org/license/MIT/"
+    },
+    openapi_url="/openapi.json",
+    docs_url="/",
+    redoc_url="/redoc",
+    servers=[
+        {
+            "url": "https://apigratis.site",
+            "description": "Production server"
+        }
+    ]
+)
 
 # Enable CORS
 app.add_middleware(
@@ -51,17 +97,6 @@ async def exception_handler(request: Request, exc: Exception) -> JSONResponse:
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"status": False, "message": str(exc)},
     )
-
-# FastAPI docs spec
-docs = {
-    "info": {
-        "title": "API Gratis",
-        "description": "A free API for testing purposes.",
-        "version": "0.1.0",
-    },
-    "servers": [{"url": "http://localhost:5000"}],
-    "openapi": "3.0.2",
-}
 
 app.include_router(api.routes)
 app.include_router(socket.routes)

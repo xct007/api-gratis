@@ -21,4 +21,4 @@ async def socket(websocket: WebSocket):
     finally:
         await websocket.close()
 
-routes.add_api_websocket_route("/ws_ack", socket)
+routes.add_api_websocket_route("/ws_ack", socket, name="ws_ack")
