@@ -1,5 +1,7 @@
+from fastapi import FastAPI, Request, status
 import logging
 import uvicorn
+
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -7,15 +9,14 @@ from starlette import status
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 
-
-from src.routers.api import router
-
+from routers import api, socket
 
 app = FastAPI()
 
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -23,7 +24,7 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
-    logger = logging.getLogger("uvicorn.access")
+    logger = logging.getLogger("uvicorn")
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter(
         "%(asctime)s - %(levelname)s - %(message)s"))
@@ -34,6 +35,16 @@ async def startup():
 @app.exception_handler(RequestValidationError)
 @app.exception_handler(Exception)
 async def exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Exception handler for FastAPI application.
+
+    Args:
+        request (Request): The request object.
+        exc (Exception): The exception object.
+
+    Returns:
+        JSONResponse: The JSON response object.
+    """
     logger = request.app.state.logger
     logger.error(f"{exc}")
     return JSONResponse(
@@ -41,9 +52,19 @@ async def exception_handler(request: Request, exc: Exception) -> JSONResponse:
         content={"status": False, "message": str(exc)},
     )
 
+# FastAPI docs spec
+docs = {
+    "info": {
+        "title": "API Gratis",
+        "description": "A free API for testing purposes.",
+        "version": "0.1.0",
+    },
+    "servers": [{"url": "http://localhost:5000"}],
+    "openapi": "3.0.2",
+}
 
-app.add_route("/api", router)
-
+app.include_router(api.routes)
+app.include_router(socket.routes)
 
 if __name__ == "__main__":
-    uvicorn.run(app="main:app", host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=5000)
