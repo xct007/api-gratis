@@ -26,7 +26,7 @@ If you like this API, please consider supporting us on [Patreon](https://www.pat
 - [Python](https://www.python.org/)
 - [Uvicorn](https://www.uvicorn.org/)
 - [Starlette](https://www.starlette.io/)
-- [GitHub](https://github.com/xct007/apigratis)
+- [GitHub](https://github.com/xct007/api-gratis)
 
 ### License
 MIT License
